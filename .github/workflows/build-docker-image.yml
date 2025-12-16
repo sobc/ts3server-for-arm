@@ -1,5 +1,9 @@
 name: Build Docker Image
 
+# This workflow MUST run on ARM64 architecture to properly build the ARM-based Docker image.
+# The 'runs-on: ubuntu-latest-arm64' ensures GitHub Actions uses an ARM64 runner.
+# The architecture is verified at the start of the workflow to prevent build issues.
+
 on:
   push:
     branches:
@@ -14,6 +18,22 @@ jobs:
       packages: write
     
     steps:
+      - name: Verify ARM64 Architecture
+        run: |
+          set -euo pipefail
+          ARCH=$(uname -m)
+          echo "Current architecture: $ARCH"
+          case "$ARCH" in
+            aarch64|arm64)
+              echo "✓ Verified: Running on ARM64 architecture ($ARCH)"
+              ;;
+            *)
+              echo "ERROR: This workflow must run on ARM64 architecture, but detected: $ARCH"
+              echo "Please ensure the runner is configured correctly (runs-on: ubuntu-latest-arm64)"
+              exit 1
+              ;;
+          esac
+      
       - name: Checkout repository
         uses: actions/checkout@v4
       
