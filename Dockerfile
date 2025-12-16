@@ -12,10 +12,14 @@ ARG BOX64_VERSION=0.3.8
 RUN cd /tmp && \ 
     git clone --depth=1 --branch v${BOX64_VERSION} https://github.com/ptitSeb/box64.git; \
     cd box64; \
+    echo "" > postinst; \
     mkdir build; \
     cd build; \
-    cmake .. -DARM_DYNAREC=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr; \
+    cmake .. -DARM_DYNAREC=ON -DCMAKE_BUILD_TYPE=Release; \
     make -j$(nproc); \
+    cpack ;\
+    mv box64-*.deb /tmp/box64.deb; 
+
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN cd /tmp && \
@@ -29,6 +33,8 @@ RUN cd /tmp && \
 FROM debian:trixie-slim
 
 RUN mkdir -p /usr/lib/x86_64-linux-gnu
+
+COPY --from=ts3server-prep /tmp/box64.deb /tmp/box64.deb
 COPY --from=ts3server-prep /usr/lib/x86_64-linux-gnu/libssl* /usr/lib/x86_64-linux-gnu
 COPY --from=ts3server-prep /usr/lib/x86_64-linux-gnu/libmariadb* /usr/lib/x86_64-linux-gnu
 
@@ -55,6 +61,9 @@ RUN set -eux; \
     tar -xf server.tar.bz2 --strip-components=1 -C /opt/ts3server; \
     rm server.tar.bz2; \
     chown -R ts3server:ts3server /opt/ts3server; 
+
+RUN dpkg -i /tmp/box64.deb; \
+    rm /tmp/box64.deb;
 
 ENV PATH="${PATH}:/opt/ts3server"
 ENV BOX64_EMULATED_LIBS=libmariadb.so.2:libcrypto.so.3
