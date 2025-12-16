@@ -1,4 +1,4 @@
-FROM debian:bookworm AS ts3server-prep
+FROM debian:trixie AS ts3server-prep
 
 RUN apt-get update && apt-get install -y \
     curl \
@@ -24,14 +24,7 @@ RUN cd /tmp && \
     apt-get update; \
     apt-get install -y libmariadb-dev:amd64 libssl-dev:amd64; \
     cd /usr/lib/x86_64-linux-gnu/; \
-    ln -s libmariadb.so.3 libmariadb.so.2; \
-    cp /usr/lib/x86_64-linux-gnu/libmariadb.so* /usr/lib/x86_64-linux-gnu/libcrypto.so* /tmp/libs/
-
-# use new image and copy 
-FROM debian:bookworm-slim
-
-COPY --from=ts3server-prep /usr/bin/box64 /usr/bin/box64
-COPY --from=ts3server-prep /tmp/libs/* /usr/lib/x86_64-linux-gnu/
+FROM debian:trixie-slim
 
 RUN apt-get update && apt-get install -y ca-certificates wget lbzip2 libssl3 locales
 
