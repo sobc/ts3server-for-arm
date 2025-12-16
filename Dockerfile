@@ -1,5 +1,7 @@
 FROM debian:trixie AS ts3server-prep
 
+ENV DEBIAN_FRONTEND=noninteractive
+
 RUN apt-get update && apt-get install -y \
     curl \
     cmake \
@@ -19,8 +21,6 @@ RUN cd /tmp && \
     make -j$(nproc); \
     cpack ;\
     mv box64-*.deb /tmp/box64.deb; 
-
-ENV DEBIAN_FRONTEND=noninteractive
 
 RUN cd /tmp && \
     dpkg --add-architecture amd64; \
