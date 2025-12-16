@@ -23,7 +23,14 @@ RUN cd /tmp && \
     apt-get update; \
     apt-get install -y libmariadb-dev:amd64 libssl-dev:amd64; \
     cd /usr/lib/x86_64-linux-gnu/; \
+    ln -s libmariadb.so.3 libmariadb.so.2; 
+
+# # use new image and copy 
 FROM debian:trixie-slim
+
+RUN mkdir -p /usr/lib/x86_64-linux-gnu
+COPY --from=ts3server-prep /usr/lib/x86_64-linux-gnu/libssl* /usr/lib/x86_64-linux-gnu
+COPY --from=ts3server-prep /usr/lib/x86_64-linux-gnu/libmariadb* /usr/lib/x86_64-linux-gnu
 
 RUN apt-get update && apt-get install -y ca-certificates wget lbzip2 libssl3 locales
 
