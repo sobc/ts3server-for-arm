@@ -22,12 +22,16 @@ jobs:
         run: |
           ARCH=$(uname -m)
           echo "Current architecture: $ARCH"
-          if [ "$ARCH" != "aarch64" ] && [ "$ARCH" != "arm64" ]; then
-            echo "ERROR: This workflow must run on ARM64 architecture, but detected: $ARCH"
-            echo "Please ensure the runner is configured correctly (runs-on: ubuntu-latest-arm64)"
-            exit 1
-          fi
-          echo "✓ Verified: Running on ARM64 architecture ($ARCH)"
+          case "$ARCH" in
+            aarch64|arm64)
+              echo "✓ Verified: Running on ARM64 architecture ($ARCH)"
+              ;;
+            *)
+              echo "ERROR: This workflow must run on ARM64 architecture, but detected: $ARCH"
+              echo "Please ensure the runner is configured correctly (runs-on: ubuntu-latest-arm64)"
+              exit 1
+              ;;
+          esac
       
       - name: Checkout repository
         uses: actions/checkout@v4
