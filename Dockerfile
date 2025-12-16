@@ -38,6 +38,8 @@ COPY --from=ts3server-prep /tmp/box64.deb /tmp/box64.deb
 COPY --from=ts3server-prep /usr/lib/x86_64-linux-gnu/libssl* /usr/lib/x86_64-linux-gnu
 COPY --from=ts3server-prep /usr/lib/x86_64-linux-gnu/libmariadb* /usr/lib/x86_64-linux-gnu
 
+ENV DEBIAN_FRONTEND=noninteractive
+
 RUN apt-get update && apt-get install -y ca-certificates wget lbzip2 libssl3 locales
 
 # Set the locale
