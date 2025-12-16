@@ -7,10 +7,10 @@ RUN apt-get update && apt-get install -y \
     git \
     python3
 
-RUN mkdir /tmp/libs
+ARG BOX64_VERSION=0.3.8
 
 RUN cd /tmp && \ 
-    git clone --depth=1 https://github.com/ptitSeb/box64.git; \
+    git clone --depth=1 --branch v${BOX64_VERSION} https://github.com/ptitSeb/box64.git; \
     cd box64; \
     mkdir build; \
     cd build; \
