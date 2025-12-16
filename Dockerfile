@@ -54,7 +54,6 @@ RUN set -eux; \
     useradd -u 9987 -d /var/ts3server -g ts3server ts3server; \
     install -d -o ts3server -g ts3server -m 775 /var/ts3server /var/run/ts3server /opt/ts3server
 
-
 ARG TEAMSPEAK_URL=https://files.teamspeak-services.com/releases/server/3.13.7/teamspeak3-server_linux_amd64-3.13.7.tar.bz2
 
 RUN set -eux; \
