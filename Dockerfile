@@ -16,8 +16,7 @@ RUN cd /tmp && \
     cd build; \
     cmake .. -DARM_DYNAREC=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr; \
     make -j$(nproc); \
-    make install; \
-    cp /usr/lib/x86_64-linux-gnu/* /tmp/libs/ 
+ENV DEBIAN_FRONTEND=noninteractive
 
 RUN cd /tmp && \
     dpkg --add-architecture amd64; \
@@ -31,9 +30,9 @@ RUN apt-get update && apt-get install -y ca-certificates wget lbzip2 libssl3 loc
 # Set the locale
 RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && \
     locale-gen
-ENV LANG en_US.UTF-8  
-ENV LANGUAGE en_US:en  
-ENV LC_ALL en_US.UTF-8  
+ENV LANG=en_US.UTF-8  
+ENV LANGUAGE=en_US:en  
+ENV LC_ALL=en_US.UTF-8  
 
 RUN set -eux; \
     groupadd -g 9987 ts3server; \
@@ -50,7 +49,7 @@ RUN set -eux; \
     rm server.tar.bz2; \
     chown -R ts3server:ts3server /opt/ts3server; 
 
-ENV PATH "${PATH}:/opt/ts3server"
+ENV PATH="${PATH}:/opt/ts3server"
 ENV BOX64_EMULATED_LIBS=libmariadb.so.2:libcrypto.so.3
 
 USER ts3server:ts3server
