@@ -32,7 +32,7 @@ To use this Teamspeak Docker image, follow these steps:
 1. Pull the Docker image from the Docker Hub repository:
 
     ```bash
-    docker pull sobc/teamspeak:aarch64
+    docker pull ghcr.io/sobc/ts3server-for-arm:latest
     ```
 
 2. Run a sample server container:
