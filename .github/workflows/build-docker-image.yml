@@ -5,9 +5,8 @@ name: Build Docker Image
 # The architecture is verified at the start of the workflow to prevent build issues.
 
 on:
-  push:
-    branches:
-      - main
+  release:
+    types: [published]
 
 jobs:
   build:
@@ -53,10 +52,8 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository }}
           tags: |
-            type=ref,event=branch
-            type=sha,prefix={{branch}}-
             type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=latest
       
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
