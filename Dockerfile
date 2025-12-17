@@ -25,9 +25,7 @@ RUN cd /tmp && \
 RUN cd /tmp && \
     dpkg --add-architecture amd64; \
     apt-get update; \
-    apt-get install -y libmariadb-dev:amd64 libssl-dev:amd64; \
-    cd /usr/lib/x86_64-linux-gnu/; \
-    ln -s libmariadb.so.3 libmariadb.so.2; 
+    apt-get install -y libmariadb-dev:amd64 libssl-dev:amd64 libzstd-dev:amd64; 
 
 # # use new image and copy 
 FROM debian:trixie-slim
@@ -35,12 +33,19 @@ FROM debian:trixie-slim
 RUN mkdir -p /usr/lib/x86_64-linux-gnu
 
 COPY --from=ts3server-prep /tmp/box64.deb /tmp/box64.deb
-COPY --from=ts3server-prep /usr/lib/x86_64-linux-gnu/libssl* /usr/lib/x86_64-linux-gnu
-COPY --from=ts3server-prep /usr/lib/x86_64-linux-gnu/libmariadb* /usr/lib/x86_64-linux-gnu
+COPY --from=ts3server-prep /usr/lib/x86_64-linux-gnu/libmariadb.so* /usr/lib/x86_64-linux-gnu/
+COPY --from=ts3server-prep /usr/lib/x86_64-linux-gnu/libssl.so* /usr/lib/x86_64-linux-gnu/
+COPY --from=ts3server-prep /usr/lib/x86_64-linux-gnu/libzstd.so* /usr/lib/x86_64-linux-gnu/
+COPY --from=ts3server-prep /usr/lib/x86_64-linux-gnu/libcrypto.so* /usr/lib/x86_64-linux-gnu/
+
+RUN cd /usr/lib/x86_64-linux-gnu && \
+    ln -s libmariadb.so.3 libmariadb.so.2
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update && apt-get install -y ca-certificates wget lbzip2 libssl3 locales
+RUN apt-get update && apt-get install -y ca-certificates wget lbzip2 libssl3 locales \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
 
 # Set the locale
 RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && \
@@ -67,7 +72,7 @@ RUN dpkg -i /tmp/box64.deb; \
     rm /tmp/box64.deb;
 
 ENV PATH="${PATH}:/opt/ts3server"
-ENV BOX64_EMULATED_LIBS=libmariadb.so.2:libcrypto.so.3
+ENV BOX64_EMULATED_LIBS=libmariadb.so.2:libcrypto.so.3:libzstd.so.1:libssl.so.3
 
 USER ts3server:ts3server
 
